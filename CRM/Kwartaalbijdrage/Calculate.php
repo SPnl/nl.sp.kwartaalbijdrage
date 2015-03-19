@@ -8,6 +8,52 @@
 
 class CRM_Kwartaalbijdrage_Calculate {
 
+    public static function getAllNotCalculatedAfdelingen(DateTime $date) {
+        $config = CRM_Kwartaalbijdrage_Config_KwartaalBijdrage::singleton();
+        $sql = "SELECT c.id
+                FROM `civicrm_contact` `c`
+                WHERE c.contact_type = 'Organization'
+                AND (
+                  c.contact_sub_type LIKE '%" . CRM_Core_DAO::VALUE_SEPARATOR . "SP_Afdeling%'
+                  OR c.contact_sub_type LIKE '%" . CRM_Core_DAO::VALUE_SEPARATOR . "SP_Werkgroep%'
+                  )
+                AND c.id NOT IN (
+                    SELECT k.entity_id FROM `".$config->customGroup['table_name']."` `k`
+                    WHERE DATE(`date`) = DATE(%1)
+                )";
+        $params[1] = array($date->format('Y-m-d'), 'String');
+        $dao = CRM_Core_DAO::executeQuery($sql, $params);
+        $return = array();
+        while($dao->fetch()) {
+            $data = self::calculate($date, $dao->id);
+            self::saveData($data);
+            $return[] = array(
+                'afdeling_id' => $data->afdeling_id,
+                'data' => $data,
+            );
+        }
+        return $return;
+    }
+
+    public static function saveData(CRM_Kwartaalbijdrage_Data $data) {
+        $config = CRM_Kwartaalbijdrage_Config_KwartaalBijdrage::singleton();
+
+        $data->calculate();
+
+        $params['id'] = $data->afdeling_id;
+        $params['custom_'.$config->date['id']] = $data->date->format('Ymd');
+        $params['custom_'.$config->basisbedrag['id']] = $data->basisbedrag;
+        $params['custom_'.$config->aantal_leden['id']] = $data->aantal_leden;
+        $params['custom_'.$config->ledenvergoeding['id']] = $data->ledenvergoeding;
+        $params['custom_'.$config->bezorgde_tribunes['id']] = $data->bezorgde_tribunes;
+        $params['custom_'.$config->tribunebezorging_vergoeding['id']] = $data->tribunebezorging_vergoeding;
+        $params['custom_'.$config->totaal_bijdrage['id']] = $data->totaal_bijdrage;
+        $params['custom_'.$config->ledenvergoeding_per_lid['id']] = $data->ledenvergoeding_per_lid;
+        $params['custom_'.$config->tribunevergoeding_per_tribune['id']] = $data->tribunevergoeding_per_tribune;
+
+        civicrm_api3('Contact', 'create', $params);
+    }
+
     public static function calculate(DateTime $date, $afdeling_id) {
         $data = new CRM_Kwartaalbijdrage_Data($afdeling_id);
         $data->date = $date;
@@ -24,6 +70,7 @@ class CRM_Kwartaalbijdrage_Calculate {
         }
 
         $data->setAantalTribunes($aantal_tribunes);
+        return $data;
     }
 
     protected static function calculateTribune(DateTime $date, $afdeling_id) {
@@ -41,7 +88,7 @@ class CRM_Kwartaalbijdrage_Calculate {
                 m.membership_type_id IN (".implode(", ", $mconfig->getMembershipTypeIds()).")
                 AND (DATE(m.start_date) <= DATE(%2) OR m.start_date IS NULL)
                 AND (DATE(m.end_date) >= DATE(%2) OR m.end_date IS NULL)
-                AND (c.deceased_date >= DATE(%2) OR c.decaesed_date IS NULL)
+                AND (c.deceased_date >= DATE(%2) OR c.deceased_date IS NULL)
               ";
 
         $params[1] = array($afdeling_id, 'Integer');
@@ -97,7 +144,7 @@ class CRM_Kwartaalbijdrage_Calculate {
                 m.membership_type_id IN (".implode(", ", $mconfig->getMembershipTypeIds()).")
                 AND (DATE(m.start_date) <= DATE(%2) OR m.start_date IS NULL)
                 AND (DATE(m.end_date) >= DATE(%2) OR m.end_date IS NULL)
-                AND (c.deceased_date >= DATE(%2) OR c.decaesed_date IS NULL)
+                AND (c.deceased_date >= DATE(%2) OR c.deceased_date IS NULL)
               ";
 
         $params[1] = array($afdeling_id, 'Integer');

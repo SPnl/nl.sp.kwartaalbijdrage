@@ -24,7 +24,7 @@ class CRM_Kwartaalbijdrage_Data {
 
     public function __construct($afdeling_id) {
         $settings = CRM_Kwartaalbijdrage_Settings::singleton();
-        $this->basisbedrag = $settings->getBasisbedragPerJaar() / 12;
+        $this->basisbedrag = round($settings->getBasisbedragPerJaar() / 12, 2);
         $this->ledenvergoeding_per_lid = $settings->getLedenvergoedingPerLid();
         $this->tribunevergoeding_per_tribune = $settings->getTribunevergoedingPerTribune();
 
@@ -34,16 +34,18 @@ class CRM_Kwartaalbijdrage_Data {
 
     public function setAantalLeden($aantal_leden) {
         $this->aantal_leden = $aantal_leden;
-        $this->ledenvergoeding = $this->aantal_leden * $this->ledenvergoeding_per_lid;
-
-        $this->totaal_bijdrage = $this->basisbedrag + $this->ledenvergoeding + $this->tribunebezorging_vergoeding;
+        $this->calculate();
     }
 
     public function setAantalTribunes($aantal_tribunes) {
         $this->bezorgde_tribunes = $aantal_tribunes;
-        $this->tribunebezorging_vergoeding = $this->bezorgde_tribunes * $this->tribunevergoeding_per_tribune;
+        $this->calculate();
+    }
 
-        $this->totaal_bijdrage = $this->basisbedrag + $this->ledenvergoeding + $this->tribunebezorging_vergoeding;
+    public function calculate() {
+        $this->ledenvergoeding = round($this->aantal_leden * $this->ledenvergoeding_per_lid, 2);
+        $this->tribunebezorging_vergoeding = round(($this->bezorgde_tribunes - $this->aantal_leden) * $this->tribunevergoeding_per_tribune, 2);
+        $this->totaal_bijdrage = round($this->basisbedrag + $this->ledenvergoeding + $this->tribunebezorging_vergoeding, 2);
     }
 
 }
