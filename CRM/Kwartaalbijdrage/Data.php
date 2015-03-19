@@ -32,6 +32,34 @@ class CRM_Kwartaalbijdrage_Data {
         $this->date = new DateTime();
     }
 
+    public static function setFromDao($dao) {
+        $config = CRM_Kwartaalbijdrage_Config_KwartaalBijdrage::singleton();
+
+        $f_date = $config->date['column_name'];
+        $f_basisbedrag = $config->basisbedrag['column_name'];
+        $f_aantal_leden = $config->aantal_leden['column_name'];
+        $f_ledenvergoeding = $config->ledenvergoeding['column_name'];
+        $f_bezorgde_tribunes = $config->bezorgde_tribunes['column_name'];
+        $f_tribunebezorging_vergoeding = $config->tribunebezorging_vergoeding['column_name'];
+        $f_totaal_bijdrage = $config->totaal_bijdrage['column_name'];
+        $f_ledenvergoeding_per_lid = $config->ledenvergoeding_per_lid['column_name'];
+        $f_tribunevergoeding_per_tribune = $config->tribunevergoeding_per_tribune['column_name'];
+
+        $data = new CRM_Kwartaalbijdrage_Data($dao->entity_id);
+
+        $data->date = new DateTime($dao->$f_date);
+        $data->basisbedrag = $dao->$f_basisbedrag;
+        $data->aantal_leden = $dao->$f_aantal_leden;
+        $data->ledenvergoeding = $dao->$f_ledenvergoeding;
+        $data->bezorgde_tribunes = $dao->$f_bezorgde_tribunes;
+        $data->tribunebezorging_vergoeding = $dao->$f_tribunebezorging_vergoeding;
+        $data->totaal_bijdrage = $dao->$f_totaal_bijdrage;
+        $data->ledenvergoeding_per_lid = $dao->$f_ledenvergoeding_per_lid;
+        $data->tribunevergoeding_per_tribune = $dao->$f_tribunevergoeding_per_tribune;
+
+        return $data;
+    }
+
     public function setAantalLeden($aantal_leden) {
         $this->aantal_leden = $aantal_leden;
         $this->calculate();

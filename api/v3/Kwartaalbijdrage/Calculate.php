@@ -1,18 +1,6 @@
 <?php
 
 /**
- * Kwartaalbijdrage.Calculate API specification (optional)
- * This is used for documentation and validation.
- *
- * @param array $spec description of fields supported by this API call
- * @return void
- * @see http://wiki.civicrm.org/confluence/display/CRM/API+Architecture+Standards
- */
-function _civicrm_api3_kwartaalbijdrage_calculate_spec(&$spec) {
-    $spec['month']['api.required'] = 1;
-}
-
-/**
  * Kwartaalbijdrage.Calculate API
  *
  * @param array $params
@@ -22,6 +10,11 @@ function _civicrm_api3_kwartaalbijdrage_calculate_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_kwartaalbijdrage_calculate($params) {
+    if (!isset($params['month'])) {
+        $now = new DateTime();
+        $params['month'] = (int) $now->format('m');
+    }
+
     if (array_key_exists('month', $params) && $params['month'] >= 1 AND $params['month'] <= 12) {
         $returnValues = array();
         $date = new DateTime();

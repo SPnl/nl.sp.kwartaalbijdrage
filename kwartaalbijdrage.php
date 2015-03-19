@@ -2,6 +2,16 @@
 
 require_once 'kwartaalbijdrage.civix.php';
 
+function kwartaalbijdrage_civicrm_tokens(&$tokens) {
+    CRM_Kwartaalbijdrage_Tokens::tokens($tokens);
+}
+
+function kwartaalbijdrage_civicrm_tokenValues(&$values, $cids, $job = null, $tokens = array(), $context = null)
+{
+    $kwartaal_bijdrage_tokens = CRM_Kwartaalbijdrage_Tokens::singleton();
+    $kwartaal_bijdrage_tokens->tokenValues($values, $cids, $job, $tokens, $context);
+}
+
 /**
  * Implementation of hook_civicrm_navigationMenu
  *
