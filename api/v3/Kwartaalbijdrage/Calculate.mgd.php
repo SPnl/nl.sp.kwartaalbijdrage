@@ -17,7 +17,7 @@ return array (
       'api_entity' => 'Kwartaalbijdrage',
       'api_action' => 'Calculate',
       'parameters' => '',
-      'is_active' => '0',
+      'is_active' => '1',
     ),
   ),
 );
