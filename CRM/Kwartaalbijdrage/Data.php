@@ -76,4 +76,8 @@ class CRM_Kwartaalbijdrage_Data {
         $this->totaal_bijdrage = round($this->basisbedrag + $this->ledenvergoeding + $this->tribunebezorging_vergoeding, 2);
     }
 
+    public function formattedDate() {
+        return $this->date->format('d-m-Y');
+    }
+
 }
