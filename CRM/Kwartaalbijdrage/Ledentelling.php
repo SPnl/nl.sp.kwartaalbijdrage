@@ -2,7 +2,15 @@
 
 class CRM_Kwartaalbijdrage_Ledentelling {
 
-  public static function getAllNotCalculatedAfdelingen(DateTime $date) {
+  /**
+   * Count members of departments and create an activity with the total members on
+   * a certain date
+   *
+   * @param \DateTime $date
+   * @return array
+   * @throws \CiviCRM_API3_Exception
+   */
+  public static function countAllNotCalculatedAfdelingen(DateTime $date) {
     $cg_ledentelling = civicrm_api3('CustomGroup', 'getvalue', array('name' => 'Ledentelling', 'return' => 'id'));
     $cf_aantal_leden = civicrm_api3('CustomField', 'getvalue', array('name' => 'Aantal_leden', 'return' => 'id', 'custom_grooup_id' => $cg_ledentelling));
     $leden_telling_activity = CRM_Core_OptionGroup::getValue('activity_type', 'leden_telling', 'name');
@@ -48,6 +56,13 @@ class CRM_Kwartaalbijdrage_Ledentelling {
     return $return;
   }
 
+  /**
+   * This function counts the members on a certain date for a department
+   *
+   * @param \DateTime $date
+   * @param $afdeling_id
+   * @return string
+   */
   protected static function ledentelling(DateTime $date, $afdeling_id) {
     $mconfig = CRM_Kwartaalbijdrage_Config_MembershipTypes::singleton();
     $gconfig = CRM_Geostelsel_Config::singleton();
