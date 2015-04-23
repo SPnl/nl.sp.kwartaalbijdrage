@@ -2,45 +2,6 @@
 
 require_once 'kwartaalbijdrage.civix.php';
 
-function kwartaalbijdrage_civicrm_tokens(&$tokens) {
-    CRM_Kwartaalbijdrage_Tokens::tokens($tokens);
-}
-
-function kwartaalbijdrage_civicrm_tokenValues(&$values, $cids, $job = null, $tokens = array(), $context = null)
-{
-    $kwartaal_bijdrage_tokens = CRM_Kwartaalbijdrage_Tokens::singleton();
-    $kwartaal_bijdrage_tokens->tokenValues($values, $cids, $job, $tokens, $context);
-}
-
-/**
- * Implementatio of hook__civicrm_tabs
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_tabs
- */
-function kwartaalbijdrage_civicrm_tabs(&$tabs, $contactID) {
-    $config = CRM_Kwartaalbijdrage_Config_KwartaalBijdrage::singleton();
-
-    //unset the tab for iban accounts via custom fields and set our own tab for
-    //display the iban accounts
-    $tab_id = 'custom_'.$config->customGroup['id'];
-    foreach($tabs as $key => $tab) {
-        if ($tab['id'] == $tab_id) {
-            unset($tabs[$key]);
-        }
-    }
-
-    $url = CRM_Utils_System::url('civicrm/contact/kwartaalbijdrage/view', "cid=$contactID&snippet=1");
-
-    //Count rules
-    $count = CRM_Core_DAO::singleValueQuery("SELECT COUNT(*) FROM `".$config->customGroup['table_name']."` WHERE `entity_id` = %1", array(1=>array($contactID, 'Integer')));
-    $tabs[] = array(
-        'id' => 'kwartaalbijdrage',
-        'url' => $url,
-        'count' => $count,
-        'title' => ts('Kwartaalbijdrage'),
-        'weight' => 0
-    );
-}
-
 /**
  * Implementation of hook_civicrm_navigationMenu
  *

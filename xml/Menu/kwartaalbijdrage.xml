@@ -6,10 +6,4 @@
     <title>Settings</title>
     <access_arguments>administer CiviCRM</access_arguments>
   </item>
-  <item>
-    <path>civicrm/contact/kwartaalbijdrage/view</path>
-    <page_callback>CRM_Kwartaalbijdrage_Page_Kwartaalbijdrage</page_callback>
-    <title>Kwartaalbijdrage</title>
-    <access_arguments>access CiviCRM</access_arguments>
-  </item>
 </menu>
