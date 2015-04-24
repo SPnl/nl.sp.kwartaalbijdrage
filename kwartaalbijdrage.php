@@ -10,19 +10,30 @@ require_once 'kwartaalbijdrage.civix.php';
 function kwartaalbijdrage_civicrm_navigationMenu( &$params ) {
     $maxKey = _kwartaalbijdrage_getMenuKeyMax($params);
 
-    $parent =_kwartaalbijdrage_get_parent_id_navigation_menu($params, 'Administer');
+    $parent =_kwartaalbijdrage_get_parent_id_navigation_menu($params, 'Memberships');
 
     $parent['child'][$maxKey+1] = array (
         'attributes' => array (
             "label"=> ts('Kwartaalbijdrage'),
             "name"=> ts('Kwartaalbijdrage'),
-            "url"=> "civicrm/admin/kwartaalbijdragen",
-            "permission" => "administer CiviCRM",
+            "url"=> "civicrm/kwartaalbijdragen",
+            "permission" => "access CiviMember",
             "parentID" => $parent['attributes']['navID'],
             "active" => 1,
-            //"navID" => $maxKey + 1,
         ),
         'child' => array(),
+    );
+
+    $parent['child'][$maxKey+2] = array (
+      'attributes' => array (
+        "label"=> ts('Tribunebezorging'),
+        "name"=> ts('Tribunebezorging'),
+        "url"=> "civicrm/tribunebezorging",
+        "permission" => "access CiviMember",
+        "parentID" => $parent['attributes']['navID'],
+        "active" => 1,
+      ),
+      'child' => array(),
     );
 }
 

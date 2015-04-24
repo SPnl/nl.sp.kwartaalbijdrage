@@ -7,19 +7,19 @@ require_once 'CRM/Core/Form.php';
  *
  * @see http://wiki.civicrm.org/confluence/display/CRMDOC43/QuickForm+Reference
  */
-class CRM_Kwartaalbijdrage_Form_Settings extends CRM_Core_Form {
+class CRM_Kwartaalbijdrage_Form_Kwartaalbijdrage extends CRM_Core_Form {
     function buildQuickForm() {
 
         $this->add('text', 'basisbedrag', t('Basisbedrag'), true);
         $this->add('text', 'ledenvergoeding', t('Ledenvergoeding'), true);
         $this->add('text', 'tribunevergoeding', t('Vergoeding'), true);
 
-        $this->addFormRule(array('CRM_Kwartaalbijdrage_Form_Settings', 'checkMoney'));
+        $this->addFormRule(array('CRM_Kwartaalbijdrage_Form_Kwartaalbijdrage', 'checkMoney'));
 
         $this->addButtons(array(
             array(
                 'type' => 'submit',
-                'name' => ts('Submit'),
+                'name' => ts('Genereer kwartaalbijdragen'),
                 'isDefault' => TRUE,
             ),
         ));
@@ -51,7 +51,7 @@ class CRM_Kwartaalbijdrage_Form_Settings extends CRM_Core_Form {
 
     function setDefaultValues() {
         $setting = CRM_Kwartaalbijdrage_Settings::singleton();
-        $defaults['basisbedrag'] =  CRM_Utils_Money::format($setting->getBasisbedragPerJaar(), 'EUR');
+        $defaults['basisbedrag'] =  CRM_Utils_Money::format($setting->getBasisbedrag(), 'EUR');
         $defaults['ledenvergoeding'] =  CRM_Utils_Money::format($setting->getLedenvergoedingPerLid(), 'EUR');
         $defaults['tribunevergoeding'] =  CRM_Utils_Money::format($setting->getTribunevergoedingPerTribune(), 'EUR');
         return $defaults;
@@ -65,6 +65,11 @@ class CRM_Kwartaalbijdrage_Form_Settings extends CRM_Core_Form {
         $tribunevergoeding = self::convertToFloat($values['tribunevergoeding']);
 
         CRM_Kwartaalbijdrage_Settings::save($basisbedrag, $ledenvergoeding, $tribunevergoeding);
+
+        $date = new DateTime();
+        $kwartaal_bijdragen = CRM_Kwartaalbijdrage_Kwartaalbijdrage::createKwartaalbijdrage($date);
+
+        CRM_Core_Session::setStatus(count($kwartaal_bijdragen).' afdelingen hebben een kwartaalbijdrage activiteit op hun naam gekregen', '', 'success');
 
         parent::postProcess();
     }

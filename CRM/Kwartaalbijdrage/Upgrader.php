@@ -14,8 +14,13 @@ class CRM_Kwartaalbijdrage_Upgrader extends CRM_Kwartaalbijdrage_Upgrader_Base {
     $params['name'] = 'tribune_bezorging';
     $params['label'] = 'Tribune bezorging';
     civicrm_api3('OptionValue', 'create', $params);
+    $params['name'] = 'kwartaal_bijdrage';
+    $params['label'] = 'Kwartaal bijdrage';
+    civicrm_api3('OptionValue', 'create', $params);
 
     $this->executeCustomDataFile('xml/ledentelling.xml');
+    $this->executeCustomDataFile('xml/tribunebezorging.xml');
+    $this->executeCustomDataFile('xml/kwartaalbijdrage.xml');
   }
 
 

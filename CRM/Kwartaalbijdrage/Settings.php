@@ -2,14 +2,14 @@
 
 class CRM_Kwartaalbijdrage_Settings {
 
-    private $basisbedrag_per_jaar;
+    private $basisbedrag;
 
     private $ledenvergoeding_per_lid;
 
     private $tribunevergoeding_per_tribune;
 
     private function __construct() {
-        $this->basisbedrag_per_jaar = CRM_Core_BAO_Setting::getItem('nl.sp.kwartaalbijdrage', 'basisbedrag_per_jaar', null, 1688.79);
+        $this->basisbedrag = CRM_Core_BAO_Setting::getItem('nl.sp.kwartaalbijdrage', 'basisbedrag', null, 1688.79);
         $this->ledenvergoeding_per_lid = CRM_Core_BAO_Setting::getItem('nl.sp.kwartaalbijdrage', 'ledenvergoeding_per_lid', null, 0.833);
         $this->tribunevergoeding_per_tribune = CRM_Core_BAO_Setting::getItem('nl.sp.kwartaalbijdrage', 'tribunevergoeding_per_tribune', null, 0.32);
     }
@@ -17,8 +17,8 @@ class CRM_Kwartaalbijdrage_Settings {
     /**
      * @return float
      */
-    public function getBasisbedragPerJaar() {
-        return (float) $this->basisbedrag_per_jaar;
+    public function getBasisbedrag() {
+        return (float) $this->basisbedrag;
     }
 
     /**
@@ -42,7 +42,7 @@ class CRM_Kwartaalbijdrage_Settings {
      * @return CRM_Kwartaalbijdrage_Settings
      */
     public static function save($basisbedrag, $ledenvergoeding, $tribunevergoeding) {
-        CRM_Core_BAO_Setting::setItem((float) $basisbedrag, 'nl.sp.kwartaalbijdrage', 'basisbedrag_per_jaar');
+        CRM_Core_BAO_Setting::setItem((float) $basisbedrag, 'nl.sp.kwartaalbijdrage', 'basisbedrag');
         CRM_Core_BAO_Setting::setItem((float) $ledenvergoeding, 'nl.sp.kwartaalbijdrage', 'ledenvergoeding_per_lid');
         CRM_Core_BAO_Setting::setItem((float) $tribunevergoeding, 'nl.sp.kwartaalbijdrage', 'tribunevergoeding_per_tribune');
 
