@@ -71,6 +71,11 @@ class CRM_Kwartaalbijdrage_Kwartaalbijdrage {
 
       $aantal_leden = self::getAantalLeden($dao->id, $qStartDate, $qEndDate);
       $aantal_tribunes = self::getAantalBezorgdeTribunes($dao->id, $qStartDate, $qEndDate);
+      $kindAfdelingen = self::getKindAfdelingen($dao->id);
+      foreach($kindAfdelingen as $kind_id) {
+        $aantal_leden += self::getAantalLeden($kind_id, $qStartDate, $qEndDate);
+        $aantal_tribunes += self::getAantalBezorgdeTribunes($kind_id, $qStartDate, $qEndDate);
+      }
 
       $params = array();
       $params['activity_type_id'] = $kwartaal_bijdrage_activity;
@@ -114,7 +119,76 @@ class CRM_Kwartaalbijdrage_Kwartaalbijdrage {
    * @return bool
    */
   private static function hasMoederAfdeling($afdeling_id) {
+    static $io_relationship = false;
+    static $werkgroup_relationship = false;
+    if (!$io_relationship) {
+      $io_relationship = civicrm_api3('RelationshipType', 'getvalue', array(
+        'name_a_b' => 'sprel_afdelingio_regio',
+        'return' => 'id'
+      ));
+    }
+    if (!$werkgroup_relationship) {
+      $werkgroup_relationship = civicrm_api3('RelationshipType', 'getvalue', array(
+        'name_a_b' => 'Is werkgroep van',
+        'return' => 'id'
+      ));
+    }
+    $sql = "SELECT COUNT(*) FROM `civicrm_relationship` `r`
+            WHERE (relationship_type_id = %1 OR r.relationship_type_id = %2) AND contact_id_b = %3
+            AND is_active = 1
+            AND (start_date IS NULL OR DATE(start_date) <= DATE(NOW()))
+            AND (end_date IS NULL OR DATE(end_date) >= DATE(NOW()))";
+    $params[1] = array($io_relationship, 'Integer');
+    $params[2] = array($werkgroup_relationship, 'Integer');
+    $params[3] = array($afdeling_id, 'Integer');
+
+    $count = CRM_Core_DAO::singleValueQuery($sql, $params);
+    if ($count) {
+      return true;
+    }
+
     return false;
+  }
+
+  /**
+   * Geef een lijst met alle kind afdelingen
+   *
+   * @param $afdeling_id
+   * @return bool
+   */
+  private static function getKindAfdelingen($afdeling_id) {
+    static $io_relationship = false;
+    static $werkgroup_relationship = false;
+    if (!$io_relationship) {
+      $io_relationship = civicrm_api3('RelationshipType', 'getvalue', array(
+        'name_a_b' => 'sprel_afdelingio_regio',
+        'return' => 'id'
+      ));
+    }
+    if (!$werkgroup_relationship) {
+      $werkgroup_relationship = civicrm_api3('RelationshipType', 'getvalue', array(
+        'name_a_b' => 'Is werkgroep van',
+        'return' => 'id'
+      ));
+    }
+    $sql = "SELECT contact_id_a FROM `civicrm_relationship` `r`
+            WHERE (relationship_type_id = %1 OR r.relationship_type_id = %2) AND contact_id_b = %3
+            AND is_active = 1
+            AND (start_date IS NULL OR DATE(start_date) <= DATE(NOW()))
+            AND (end_date IS NULL OR DATE(end_date) >= DATE(NOW()))";
+    $params[1] = array($io_relationship, 'Integer');
+    $params[2] = array($werkgroup_relationship, 'Integer');
+    $params[3] = array($afdeling_id, 'Integer');
+
+    $return = array();
+    $dao = CRM_Core_DAO::executeQuery($sql, $params);
+    while($dao->fetch()) {
+      if (!in_array($dao->contact_id_a, $return)) {
+        $return[] = $dao->contact_id_a;
+      }
+    }
+
+    return $return;
   }
 
   /**
