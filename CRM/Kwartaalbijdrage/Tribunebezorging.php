@@ -28,6 +28,10 @@ class CRM_Kwartaalbijdrage_Tribunebezorging {
     $date = new DateTime();
     $return = array();
     while($dao->fetch()) {
+      if (CRM_Kwartaalbijdrage_Utils::isAfdelingOpgeheven($dao->id)) {
+        continue;
+      }
+
       $aantal = CRM_Bezorggebieden_Utils_AfdelingTelling::getAfdelingTelling($dao->id);
 
       $params = array();

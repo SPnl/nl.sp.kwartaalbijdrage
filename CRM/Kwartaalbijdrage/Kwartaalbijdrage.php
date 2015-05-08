@@ -20,7 +20,7 @@ class CRM_Kwartaalbijdrage_Kwartaalbijdrage {
 
     $kwartaal_bijdrage_activity = CRM_Core_OptionGroup::getValue('activity_type', 'kwartaal_bijdrage', 'name');
 
-    $date->modify('-3 months');
+    //current quarter
     $q = ceil($date->format('m') / 3);
     $qStartDate = new DateTime();
     $qEndDate = new DateTime();
@@ -42,6 +42,12 @@ class CRM_Kwartaalbijdrage_Kwartaalbijdrage {
         $qEndDate->setDate($date->format('Y'), 12, 31);
         break;
     }
+
+    //previous quarter
+    $pqStartDate = clone $qStartDate;
+    $pqStartDate->modify('-3 months');
+    $pqEndDate = clone $qEndDate;
+    $pqEndDate->modify('-3 months');
 
     $sql = "SELECT c.id, c.display_name
                 FROM `civicrm_contact` `c`
@@ -65,16 +71,16 @@ class CRM_Kwartaalbijdrage_Kwartaalbijdrage {
     $dao = CRM_Core_DAO::executeQuery($sql, $params);
     $return = array();
     while($dao->fetch()) {
-      if (self::hasMoederAfdeling($dao->id)) {
+      if (self::hasMoederAfdeling($dao->id) || CRM_Kwartaalbijdrage_Utils::isAfdelingOpgeheven($dao->id)) {
         continue;
       }
 
-      $aantal_leden = self::getAantalLeden($dao->id, $qStartDate, $qEndDate);
-      $aantal_tribunes = self::getAantalBezorgdeTribunes($dao->id, $qStartDate, $qEndDate);
+      $aantal_leden = self::getAantalLeden($dao->id, $pqStartDate, $pqEndDate);
+      $aantal_tribunes = self::getAantalBezorgdeTribunes($dao->id, $pqStartDate, $pqEndDate);
       $kindAfdelingen = self::getKindAfdelingen($dao->id);
       foreach($kindAfdelingen as $kind_id) {
-        $aantal_leden += self::getAantalLeden($kind_id, $qStartDate, $qEndDate);
-        $aantal_tribunes += self::getAantalBezorgdeTribunes($kind_id, $qStartDate, $qEndDate);
+        $aantal_leden += self::getAantalLeden($kind_id, $pqStartDate, $pqEndDate);
+        $aantal_tribunes += self::getAantalBezorgdeTribunes($kind_id, $pqStartDate, $pqEndDate);
       }
 
       $params = array();

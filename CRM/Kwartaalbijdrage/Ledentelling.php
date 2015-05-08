@@ -35,6 +35,10 @@ class CRM_Kwartaalbijdrage_Ledentelling {
     $dao = CRM_Core_DAO::executeQuery($sql, $params);
     $return = array();
     while($dao->fetch()) {
+      if (CRM_Kwartaalbijdrage_Utils::isAfdelingOpgeheven($dao->id)) {
+        continue;
+      }
+
       $aantal_leden = self::ledentelling($date, $dao->id);
 
       $params = array();

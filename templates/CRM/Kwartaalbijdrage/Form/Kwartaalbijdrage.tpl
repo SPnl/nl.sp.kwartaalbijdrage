@@ -6,7 +6,7 @@
 
     <div class="crm-section">
         <div class="label">{$form.basisbedrag.label}</div>
-        <div class="content">{$form.basisbedrag.html} <em>Per jaar</em></div>
+        <div class="content">{$form.basisbedrag.html} <em>Per kwartaal</em></div>
         <div class="clear"></div>
     </div>
 
