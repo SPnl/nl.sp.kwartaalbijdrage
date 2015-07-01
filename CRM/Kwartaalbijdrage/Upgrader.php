@@ -23,6 +23,19 @@ class CRM_Kwartaalbijdrage_Upgrader extends CRM_Kwartaalbijdrage_Upgrader_Base {
     $this->executeCustomDataFile('xml/kwartaalbijdrage.xml');
   }
 
+  /**
+   * Remove all kwartaal bijdrage activiteiten van 1 juli 2015
+   * @return bool
+   */
+  public function upgrade_1001() {
+    $kwartaal_bijdrage_activity = CRM_Core_OptionGroup::getValue('activity_type', 'kwartaal_bijdrage', 'name');
+    $dao = CRM_Core_DAO::executeQuery("SELECT * FROM `civicrm_activity` WHERE `activity_type_id` = '".$kwartaal_bijdrage_activity."' AND DATE(`activity_date_time`) = '2015-07-01'");
+    while($dao->fetch()) {
+      $params = array('id' => $dao->id);
+      CRM_Activity_BAO_Activity::deleteActivity($params);
+    }
+    return true;
+  }
 
 
 

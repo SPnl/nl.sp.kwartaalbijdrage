@@ -140,7 +140,7 @@ class CRM_Kwartaalbijdrage_Kwartaalbijdrage {
       ));
     }
     $sql = "SELECT COUNT(*) FROM `civicrm_relationship` `r`
-            WHERE (relationship_type_id = %1 OR r.relationship_type_id = %2) AND contact_id_b = %3
+            WHERE (relationship_type_id = %1 OR r.relationship_type_id = %2) AND contact_id_a = %3
             AND is_active = 1
             AND (start_date IS NULL OR DATE(start_date) <= DATE(NOW()))
             AND (end_date IS NULL OR DATE(end_date) >= DATE(NOW()))";
