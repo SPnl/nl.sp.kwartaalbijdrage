@@ -4,12 +4,12 @@
     <path>civicrm/kwartaalbijdragen</path>
     <page_callback>CRM_Kwartaalbijdrage_Form_Kwartaalbijdrage</page_callback>
     <title>Kwartaalbijdragen</title>
-    <access_arguments>access CiviMember</access_arguments>
+    <access_arguments>edit memberships</access_arguments>
   </item>
   <item>
     <path>civicrm/tribunebezorging</path>
     <page_callback>CRM_Kwartaalbijdrage_Page_Tribunebezorging</page_callback>
     <title>Tribunebezorging</title>
-    <access_arguments>access CiviMember</access_arguments>
+    <access_arguments>edit memberships </access_arguments>
   </item>
 </menu>
