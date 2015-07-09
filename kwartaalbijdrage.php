@@ -67,20 +67,7 @@ function _kwartaalbijdrage_getMenuKeyMax($menuArray) {
 }
 
 function geostelsel_civicrm_buildForm($formName, &$form) {
-  if ($formName == 'CRM_Activity_Form_ActivityLinks') {
-    $kwartaal_bijdrage_activity = CRM_Core_OptionGroup::getValue('activity_type', 'kwartaal_bijdrage', 'name');
-    $leden_telling_activity = CRM_Core_OptionGroup::getValue('activity_type', 'leden_telling', 'name');
-    $tribunebezorging_activity = CRM_Core_OptionGroup::getValue('activity_type', 'tribune_bezorging', 'name');
-
-    $activityTypes = $form->get_template_vars('activityTypes');
-
-    unset($activityTypes[$kwartaal_bijdrage_activity]);
-    unset($activityTypes[$leden_telling_activity]);
-    unset($activityTypes[$tribunebezorging_activity]);
-
-    $form->assign('activityTypes', $activityTypes);
-
-  }
+  CRM_Kwartaalbijdrage_RemoveActivityFromUserInterface::buildForm($formName,$form);
 }
 
 /**
