@@ -10,6 +10,6 @@
     <path>civicrm/tribunebezorging</path>
     <page_callback>CRM_Kwartaalbijdrage_Page_Tribunebezorging</page_callback>
     <title>Tribunebezorging</title>
-    <access_arguments>edit memberships </access_arguments>
+    <access_arguments>edit memberships</access_arguments>
   </item>
 </menu>
