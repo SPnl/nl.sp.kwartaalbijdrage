@@ -5,18 +5,18 @@ class CRM_Kwartaalbijdrage_Kwartaalbijdrage {
 
   public static function createKwartaalbijdrage(DateTime $date) {
     $settings = CRM_Kwartaalbijdrage_Settings::singleton();
+    $cfsp = CRM_Spgeneric_CustomField::singleton();
 
-    $cg_kwartaalbijdrage = civicrm_api3('CustomGroup', 'getvalue', array('name' => 'Kwartaalbijdrage', 'return' => 'id'));
-    $cf_basisbedrag = civicrm_api3('CustomField', 'getvalue', array('name' => 'Basisbedrag', 'return' => 'id', 'custom_grooup_id' => $cg_kwartaalbijdrage));
-    $cf_totaal_leden = civicrm_api3('CustomField', 'getvalue', array('name' => 'Totaal_leden', 'return' => 'id', 'custom_grooup_id' => $cg_kwartaalbijdrage));
-    $cf_ledenvergoeding_per_lid = civicrm_api3('CustomField', 'getvalue', array('name' => 'Ledenvergoeding_per_lid', 'return' => 'id', 'custom_grooup_id' => $cg_kwartaalbijdrage));
-    $cf_ledenvergeoding = civicrm_api3('CustomField', 'getvalue', array('name' => 'Ledenvergoeding', 'return' => 'id', 'custom_grooup_id' => $cg_kwartaalbijdrage));
-    $cf_subtotaal_tribunebezorging = civicrm_api3('CustomField', 'getvalue', array('name' => 'Subtotaal_tribunebezorging', 'return' => 'id', 'custom_grooup_id' => $cg_kwartaalbijdrage));
-    $cf_totaal_tribunebezorging = civicrm_api3('CustomField', 'getvalue', array('name' => 'Totaal_tribunebezorging', 'return' => 'id', 'custom_grooup_id' => $cg_kwartaalbijdrage));
-    $cf_bezorgvergoeding_per_tribune = civicrm_api3('CustomField', 'getvalue', array('name' => 'Bezorgvergoeding_per_tribune', 'return' => 'id', 'custom_grooup_id' => $cg_kwartaalbijdrage));
-    $cf_bezorgvergoeding = civicrm_api3('CustomField', 'getvalue', array('name' => 'Bezorgvergoeding', 'return' => 'id', 'custom_grooup_id' => $cg_kwartaalbijdrage));
-    $cf_kwartaalbijdrage = civicrm_api3('CustomField', 'getvalue', array('name' => 'Kwartaalbijdrage', 'return' => 'id', 'custom_grooup_id' => $cg_kwartaalbijdrage));
-
+    $cg_kwartaalbijdrage = $cfsp->getGroupId('Kwartaalbijdrage');
+    $cf_basisbedrag = $cfsp->getFieldId('Kwartaalbijdrage', 'Basisbedrag');
+    $cf_totaal_leden = $cfsp->getFieldId('Kwartaalbijdrage', 'Totaal_leden');
+    $cf_ledenvergoeding_per_lid = $cfsp->getFieldId('Kwartaalbijdrage', 'Ledenvergoeding_per_lid');
+    $cf_ledenvergeoding = $cfsp->getFieldId('Kwartaalbijdrage', 'Ledenvergoeding');
+    $cf_subtotaal_tribunebezorging =  $cfsp->getFieldId('Kwartaalbijdrage', 'Subtotaal_tribunebezorging');
+    $cf_totaal_tribunebezorging = $cfsp->getFieldId('Kwartaalbijdrage', 'Totaal_tribunebezorging');
+    $cf_bezorgvergoeding_per_tribune =  $cfsp->getFieldId('Kwartaalbijdrage', 'Bezorgvergoeding_per_tribune');
+    $cf_bezorgvergoeding =  $cfsp->getFieldId('Kwartaalbijdrage', 'Bezorgvergoeding');
+    $cf_kwartaalbijdrage = $cfsp->getFieldId('Kwartaalbijdrage', 'Kwartaalbijdrage');
 
     $kwartaal_bijdrage_activity = CRM_Core_OptionGroup::getValue('activity_type', 'kwartaal_bijdrage', 'name');
 
@@ -208,10 +208,12 @@ class CRM_Kwartaalbijdrage_Kwartaalbijdrage {
    */
   private static function getAantalBezorgdeTribunes($afdeling_id, $qStartDate, $qEndDate) {
     $tribunebezorging_activity = CRM_Core_OptionGroup::getValue('activity_type', 'tribune_bezorging', 'name');
-    $cg_tribunebezorging = civicrm_api3('CustomGroup', 'getsingle', array('name' => 'Tribunebezorging'));
-    $cf_aantal_bezorgd = civicrm_api3('CustomField', 'getvalue', array('name' => 'aantal_bezorgd', 'return' => 'column_name', 'custom_grooup_id' => $cg_tribunebezorging['id']));
 
-    $sql = "SELECT SUM(`".$cf_aantal_bezorgd."`) AS aantal_leden
+    $cfsp = CRM_Spgeneric_CustomField::singleton();
+    $cg_tribunebezorging = $cfsp->getGroupByName('Tribunebezorging');
+    $cf_aantal_bezorgd = $cfsp->getField('Tribunebezorging', 'aantal_bezorgd');
+
+    $sql = "SELECT SUM(`".$cf_aantal_bezorgd['column_name']."`) AS aantal_leden
             FROM `civicrm_activity`
             INNER JOIN `".$cg_tribunebezorging['table_name']."` ON `".$cg_tribunebezorging['table_name']."`.entity_id = civicrm_activity.id
             INNER JOIN civicrm_activity_contact ON civicrm_activity.id = civicrm_activity_contact.activity_id
@@ -238,10 +240,13 @@ class CRM_Kwartaalbijdrage_Kwartaalbijdrage {
    * @throws \CiviCRM_API3_Exception
    */
   private static function getAantalLeden($afdeling_id, $qStartDate, $qEndDate) {
-    $cg_ledentelling = civicrm_api3('CustomGroup', 'getsingle', array('name' => 'Ledentelling'));
-    $cf_aantal_leden = civicrm_api3('CustomField', 'getvalue', array('name' => 'Aantal_leden', 'return' => 'column_name', 'custom_grooup_id' => $cg_ledentelling['id']));
+
+    $cfsp = CRM_Spgeneric_CustomField::singleton();
+    $cg_ledentelling = $cfsp->getGroupByName('Ledentelling');
+    $cf_aantal_leden = $cfsp->getField('Ledentelling', 'Aantal_leden');
+
     $leden_telling_activity = CRM_Core_OptionGroup::getValue('activity_type', 'leden_telling', 'name');
-    $sql = "SELECT SUM(`".$cf_aantal_leden."`) AS aantal_leden
+    $sql = "SELECT SUM(`".$cf_aantal_leden['column_name']."`) AS aantal_leden
             FROM `civicrm_activity`
             INNER JOIN `".$cg_ledentelling['table_name']."` ON `".$cg_ledentelling['table_name']."`.entity_id = civicrm_activity.id
             INNER JOIN civicrm_activity_contact ON civicrm_activity.id = civicrm_activity_contact.activity_id

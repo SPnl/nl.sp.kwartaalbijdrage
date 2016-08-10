@@ -11,8 +11,9 @@ class CRM_Kwartaalbijdrage_Ledentelling {
    * @throws \CiviCRM_API3_Exception
    */
   public static function countAllNotCalculatedAfdelingen(DateTime $date) {
-    $cg_ledentelling = civicrm_api3('CustomGroup', 'getvalue', array('name' => 'Ledentelling', 'return' => 'id'));
-    $cf_aantal_leden = civicrm_api3('CustomField', 'getvalue', array('name' => 'Aantal_leden', 'return' => 'id', 'custom_grooup_id' => $cg_ledentelling));
+    $cfsp = CRM_Spgeneric_CustomField::singleton();
+    $cg_ledentelling = $cfsp->getGroupId('Ledentelling');
+    $cf_aantal_leden = $cfsp->getFieldId('Ledentelling', 'Aantal_leden');
     $leden_telling_activity = CRM_Core_OptionGroup::getValue('activity_type', 'leden_telling', 'name');
     $sql = "SELECT c.id, c.display_name
                 FROM `civicrm_contact` `c`

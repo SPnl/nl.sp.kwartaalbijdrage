@@ -12,8 +12,9 @@ class CRM_Kwartaalbijdrage_Tribunebezorging {
   public static function createTribunebezorgingActivity() {
     $tribunebezorging_activity = CRM_Core_OptionGroup::getValue('activity_type', 'tribune_bezorging', 'name');
 
-    $cg_tribunebezorging = civicrm_api3('CustomGroup', 'getvalue', array('name' => 'Tribunebezorging', 'return' => 'id'));
-    $cf_aantal_bezorgd = civicrm_api3('CustomField', 'getvalue', array('name' => 'aantal_bezorgd', 'return' => 'id', 'custom_grooup_id' => $cg_tribunebezorging));
+    $cfsp = CRM_Spgeneric_CustomField::singleton();
+    $cg_tribunebezorging = $cfsp->getGroupId('Tribunebezorging');
+    $cf_aantal_bezorgd = $cfsp->getFieldId('Tribunebezorging', 'Aantal_bezorgd');
 
     $dao = CRM_Core_DAO::executeQuery("
                 SELECT c.id, c.display_name
