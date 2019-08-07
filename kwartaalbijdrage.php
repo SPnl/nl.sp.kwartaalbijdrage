@@ -8,62 +8,34 @@ require_once 'kwartaalbijdrage.civix.php';
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
  */
 function kwartaalbijdrage_civicrm_navigationMenu( &$params ) {
-    $maxKey = _kwartaalbijdrage_getMenuKeyMax($params);
+    foreach ($params as &$menu) {
+        if (array_key_exists('attributes', $menu) && $menu['attributes']['name'] == 'Memberships') {
+            $maxKey = (max(array_keys($menu['child'])));
+            $menu['child'][$maxKey+1] = array (
+                'attributes' => array (
+                    "label"=> ts('Kwartaalbijdrage'),
+                    "name"=> ts('Kwartaalbijdrage'),
+                    "url"=> "civicrm/kwartaalbijdragen",
+                    "permission" => "edit memberships",
+                    "parentID" => $menu['attributes']['navID'],
+                    "active" => 1,
+                ),
+                'child' => array(),
+            );
 
-    $parent =_kwartaalbijdrage_get_parent_id_navigation_menu($params, 'Memberships');
-
-    $parent['child'][$maxKey+1] = array (
-        'attributes' => array (
-            "label"=> ts('Kwartaalbijdrage'),
-            "name"=> ts('Kwartaalbijdrage'),
-            "url"=> "civicrm/kwartaalbijdragen",
-            "permission" => "edit memberships",
-            "parentID" => $parent['attributes']['navID'],
-            "active" => 1,
-        ),
-        'child' => array(),
-    );
-
-    $parent['child'][$maxKey+2] = array (
-      'attributes' => array (
-        "label"=> ts('Tribunebezorging'),
-        "name"=> ts('Tribunebezorging'),
-        "url"=> "civicrm/tribunebezorging",
-        "permission" => "edit memberships",
-        "parentID" => $parent['attributes']['navID'],
-        "active" => 1,
-      ),
-      'child' => array(),
-    );
-}
-
-function _kwartaalbijdrage_get_parent_id_navigation_menu(&$menu, $path, &$parent = NULL) {
-    // If we are done going down the path, insert menu
-    if (empty($path)) {
-        return $parent;
-    } else {
-        // Find an recurse into the next level down
-        $found = false;
-        $path = explode('/', $path);
-        $first = array_shift($path);
-        foreach ($menu as $key => &$entry) {
-            if ($entry['attributes']['name'] == $first) {
-                if (!$entry['child']) $entry['child'] = array();
-                $found = _kwartaalbijdrage_get_parent_id_navigation_menu($entry['child'], implode('/', $path), $entry);
-            }
-        }
-        return $found;
-    }
-}
-
-function _kwartaalbijdrage_getMenuKeyMax($menuArray) {
-    $max = array(max(array_keys($menuArray)));
-    foreach($menuArray as $v) {
-        if (!empty($v['child'])) {
-            $max[] = _kwartaalbijdrage_getMenuKeyMax($v['child']);
+            $menu['child'][$maxKey+2] = array (
+                'attributes' => array (
+                    "label"=> ts('Tribunebezorging'),
+                    "name"=> ts('Tribunebezorging'),
+                    "url"=> "civicrm/tribunebezorging",
+                    "permission" => "edit memberships",
+                    "parentID" => $menu['attributes']['navID'],
+                    "active" => 1,
+                ),
+                'child' => array(),
+            );
         }
     }
-    return max($max);
 }
 
 function geostelsel_civicrm_buildForm($formName, &$form) {
